@@ -1,6 +1,16 @@
-# mediala
+# お薬アラーム
 
-Medicine Alarm
+服薬する時間を忘れないためのアプリ。
+
+## Table of Contents
+
+* [Technologies](#technologies)
+* [Demo](#demo)
+* [Getting started](#getting-started)
+* [Deployment](#deployment)
+* [Usage](#usage)
+* [References](#references)
+* [License](#license)
 
 ## Getting Started
 
