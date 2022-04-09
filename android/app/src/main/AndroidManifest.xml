@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="jp.fujilabo.mediala">
    <application
-        android:label="mediala"
+        android:label="お薬アラーム"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
