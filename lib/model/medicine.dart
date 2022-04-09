@@ -19,7 +19,7 @@ class Medicine {
   String name;
   String memo;
 
-  Medicine(this.name, this.memo, [this.id = 1]);
+  Medicine(this.name, [this.memo = '', this.id]);
 
   List<Alarm> alarms() {
     return [];
