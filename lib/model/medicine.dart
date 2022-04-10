@@ -30,4 +30,14 @@ class Medicine {
     MedicineFields.name: name,
     MedicineFields.memo: memo,
   };
+
+  Medicine copy ({
+    int? id,
+    String? name,
+    String? memo,
+  }) => Medicine (
+      name ?? this.name,
+      memo ?? this.memo,
+      id ?? this.id
+  );
 }

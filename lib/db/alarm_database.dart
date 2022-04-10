@@ -68,11 +68,11 @@ class AlarmDatabase {
   }
 
   //Try function
-  Future<int?> create(Medicine medicine) async {
+  Future<Medicine> create(Medicine medicine) async {
     final db = await instance.database;
     final id = await db?.insert(tableMedicines, medicine.toJson());
     print('id of inserted medicine is ${id}');
-    return  id;
+    return  medicine.copy(id: id);
   }
 
 }
