@@ -5,12 +5,12 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import '../model/medicine.dart';
 
-class AlarmDatabase {
-  static final  AlarmDatabase instance = AlarmDatabase._init();
+class MediaAlaDatabase {
+  static final  MediaAlaDatabase instance = MediaAlaDatabase._init();
 
   static Database ? _database;
 
-  AlarmDatabase._init();
+  MediaAlaDatabase._init();
 
   // initialize DB
   Future<Database?> get database async {
@@ -70,7 +70,7 @@ class AlarmDatabase {
   //Try function
   Future<Medicine> create(Medicine medicine) async {
     final db = await instance.database;
-    final id = await db?.insert(tableMedicines, medicine.toJson());
+    final id = await db?.insert(tableMedicines, medicine.toMap());
     print('id of inserted medicine is ${id}');
     return  medicine.copy(id: id);
   }

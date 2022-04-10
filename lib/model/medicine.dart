@@ -25,7 +25,7 @@ class Medicine {
     return [];
   }
 
-  Map<String, Object?> toJson() => {
+  Map<String, Object?> toMap() => {
     MedicineFields.id: id,
     MedicineFields.name: name,
     MedicineFields.memo: memo,

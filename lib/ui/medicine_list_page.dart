@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mediala/db/alarm_database.dart';
+import 'package:mediala/db/mediala_database.dart';
 
 import '../model/medicine.dart';
 import 'medicine_detail_page.dart';
@@ -22,8 +22,8 @@ class _MedicineListPageState extends State<MedicineListPage> {
           child: ElevatedButton(
             child: const Text("薬を登録する"),
             onPressed: () async {
-              AlarmDatabase.instance.create(Medicine('ビタミン剤'));
-              AlarmDatabase.instance.create(Medicine('目薬'));
+              MediaAlaDatabase.instance.create(Medicine('ビタミン剤'));
+              MediaAlaDatabase.instance.create(Medicine('目薬'));
               Medicine medicne = await Navigator.push(context, MaterialPageRoute(builder: (context) => MedicineNewPage()));
               // この値を MedicineList に渡したい。
               // DB に入れちゃうのが楽なのか？
