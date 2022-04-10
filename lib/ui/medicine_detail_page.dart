@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:sprintf/sprintf.dart';
 
+import '../db/mediala_database.dart';
 import '../model/alarm.dart';
 import '../model/medicine.dart';
 
@@ -57,9 +59,9 @@ class AlertList extends StatefulWidget {
 
 class _AlertListState extends State<AlertList> {
   List<Alarm> alarms = [
-    Alarm(10, 0, [ true, true, true, true, true, true, true ]),
-    Alarm(13, 0, [ true, false, false, false, true, false, false ]),
-    Alarm(17, 30, [ true, false, true, true, false, false, true ]),
+    Alarm(15,30,[ true, true, true, true, true, true, true ], 1, 2),
+    //Alarm(13, 0, [ true, false, false, false, true, false, false ]),
+    //Alarm(17, 30, [ true, false, true, true, false, false, true ]),
   ];
 
   @override
@@ -205,10 +207,11 @@ Future openDialog(BuildContext context) {
             ),
             TextButton(
               child: const Text("追加"),
-              onPressed: () {
+              onPressed: () async{
                 int hour = int.parse(_hourController.text);
                 int minute = int.parse(_minuteController.text);
-                var alarm = Alarm(hour, minute, days.map((d) => d.checked).toList());
+                //var alarm = Alarm(hour, minute, days.map((d) => d.checked).toList());
+                var alarm = await MediaAlaDatabase.instance.createAlarm(Alarm(hour, minute ,[ true, true, true, true, true, true, true ], 5, 3));
                 Navigator.pop(context, alarm);
               },
             ),

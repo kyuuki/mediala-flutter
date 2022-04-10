@@ -81,4 +81,15 @@ class MediaAlaDatabase {
     final result = await db?.query(tableMedicines, orderBy: orderBy);
     return result?.map((json) => Medicine.fromMap(json)).toList();
   }
+
+  Future<Alarm> createAlarm(Alarm alarm) async{
+    final db = await instance.database;
+    final id = await db?.insert(tableAlarms, alarm.toMap());
+    print('alarm inserted with id: ${id}');
+    // Check DB
+   // final orderBy = '${AlarmFields.medicine_id} ASC';
+   //  final result = await db?.query(tableAlarms, orderBy: orderBy);
+   //  result?.map((json) => Alarm.fromMap(json)).toList();
+    return alarm.idCopy(id: id);
+  }
 }
