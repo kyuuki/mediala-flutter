@@ -22,14 +22,13 @@ class _MedicineListPageState extends State<MedicineListPage> {
           child: ElevatedButton(
             child: const Text("薬を登録する"),
             onPressed: () async {
-              MediaAlaDatabase.instance.create(Medicine('ビタミン剤'));
-              MediaAlaDatabase.instance.create(Medicine('目薬'));
-              Medicine medicne = await Navigator.push(context, MaterialPageRoute(builder: (context) => MedicineNewPage()));
+              //Medicine medicne = await Navigator.push(context, MaterialPageRoute(builder: (context) => MedicineNewPage()));
+              await Navigator.push(context, MaterialPageRoute(builder: (context) => MedicineNewPage()));
               // この値を MedicineList に渡したい。
               // DB に入れちゃうのが楽なのか？
-              setState(() {
+             /** setState(() {
                 medicines.add(medicne);
-              });
+              });**/
             },
           ),
         ),
@@ -44,27 +43,46 @@ class _MedicineListPageState extends State<MedicineListPage> {
 
 // TODO: グローバルにはしたくない
 // お薬リスト
-List<Medicine> medicines = [
-  Medicine("ビタミン剤", ""),
-  Medicine("目薬", ""),
-  Medicine("喉のくすり", ""),
-];
-
+/**List<Medicine> medicines = [
+  //Medicine("ビタミン剤", ""),
+ // Medicine("目薬", ""),
+  //Medicine("喉のくすり", ""),
+]; */
 class MedicineList extends StatefulWidget {
   //const MedicineList({Key? key}) : super(key: key);
 
   @override
   _MedicineListState createState() => _MedicineListState();
-
-  void add(Medicine medicine) {
+  /**void add(Medicine medicine) {
     medicines.add(medicine);
-  }
+  }**/
 }
 
 class _MedicineListState extends State<MedicineList> {
 
+  late List<Medicine> medicines;
+  bool isLoading = false;
+
   @override
-  Widget build(BuildContext context) {
+  void initState(){
+    super.initState();
+    refreshMedicines();
+  }
+
+  @override
+  void dispose() {
+    MediaAlaDatabase.instance.close();
+    super.dispose();
+  }
+
+  Future refreshMedicines() async {
+    setState(() => isLoading = true);
+    this.medicines = (await MediaAlaDatabase.instance.getAllMedicines())!;
+    setState(() => isLoading = false);
+  }
+
+  @override
+  Widget build(BuildContext context){
     return ListView.separated(
       itemCount: medicines.length,
       itemBuilder: (context, i) {

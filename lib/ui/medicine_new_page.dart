@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../db/mediala_database.dart';
 import '../model/medicine.dart';
 
 class MedicineNewPage extends StatelessWidget {
@@ -24,8 +25,10 @@ class MedicineNewPage extends StatelessWidget {
             const Spacer(),
             ElevatedButton(
               child: Text("保存する"),
-              onPressed: () {
-                Navigator.pop(context, Medicine(_nameController.text, ""));
+              onPressed: () async{
+                await MediaAlaDatabase.instance.create(Medicine(_nameController.text));
+                //Navigator.pop(context, Medicine(_nameController.text, ""));
+                Navigator.pop(context);
               },
             ),
             const Spacer(),

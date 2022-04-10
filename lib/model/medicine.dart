@@ -31,6 +31,12 @@ class Medicine {
     MedicineFields.memo: memo,
   };
 
+  static Medicine fromMap(Map<String, Object?> json) => Medicine(
+    json[MedicineFields.name] as String,
+    json[MedicineFields.memo] as String,
+    json[MedicineFields.id] as int?,
+  );
+
   Medicine copy ({
     int? id,
     String? name,

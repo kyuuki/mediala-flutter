@@ -67,12 +67,18 @@ class MediaAlaDatabase {
     db?.close();
   }
 
-  //Try function
+  //Inserting medicine name in database
   Future<Medicine> create(Medicine medicine) async {
     final db = await instance.database;
     final id = await db?.insert(tableMedicines, medicine.toMap());
-    print('id of inserted medicine is ${id}');
+    print('medicine inserted with id: ${id}');
     return  medicine.copy(id: id);
   }
 
+  Future<List<Medicine>?> getAllMedicines() async {
+    final db = await instance.database;
+    final orderBy = '${MedicineFields.id} ASC';
+    final result = await db?.query(tableMedicines, orderBy: orderBy);
+    return result?.map((json) => Medicine.fromMap(json)).toList();
+  }
 }
