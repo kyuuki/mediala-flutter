@@ -26,7 +26,7 @@ class _MedicineListPageState extends State<MedicineListPage> {
               await Navigator.push(context, MaterialPageRoute(builder: (context) => MedicineNewPage()));
 
               // new_page で登録したデータをここで取り出し
-              medicines = (await MediaAlaDatabase.instance.getAllMedicines())!;
+              medicines = await MediaAlaDatabase.instance.getAllMedicines();
 
               setState(() {
                 // グローバル変数に入れる処理はここじゃなくても大丈夫？
@@ -81,7 +81,7 @@ class _MedicineListState extends State<MedicineList> {
 
   Future refreshMedicines() async {
     setState(() => isLoading = true);
-    medicines = (await MediaAlaDatabase.instance.getAllMedicines())!;
+    medicines = await MediaAlaDatabase.instance.getAllMedicines();
     setState(() => isLoading = false);
   }
 

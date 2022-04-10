@@ -1,23 +1,21 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:mediala/model/alarm.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import '../model/medicine.dart';
+import '../model/alarm.dart';
 
 class MediaAlaDatabase {
-  static final  MediaAlaDatabase instance = MediaAlaDatabase._init();
+  static final MediaAlaDatabase instance = MediaAlaDatabase._init();
 
-  static Database ? _database;
+  static Database? _database;
 
   MediaAlaDatabase._init();
 
   // initialize DB
-  Future<Database?> get database async {
-    if (_database!=null) return _database;
+  Future<Database> get database async {
+    if (_database != null) return _database!;
 
     _database = await _initDB('alarms.db');
-    return _database;
+    return _database!;
   }
 
   Future<Database> _initDB(String filePath) async {
@@ -64,27 +62,27 @@ class MediaAlaDatabase {
 
   Future close() async {
     final db = await instance.database;
-    db?.close();
+    db.close();
   }
 
   //Inserting medicine name in database
   Future<Medicine> create(Medicine medicine) async {
     final db = await instance.database;
-    final id = await db?.insert(tableMedicines, medicine.toMap());
+    final id = await db.insert(tableMedicines, medicine.toMap());
     print('medicine inserted with id: ${id}');
     return  medicine.copy(id: id);
   }
 
-  Future<List<Medicine>?> getAllMedicines() async {
+  Future<List<Medicine>> getAllMedicines() async {
     final db = await instance.database;
     final orderBy = '${MedicineFields.id} ASC';
-    final result = await db?.query(tableMedicines, orderBy: orderBy);
-    return result?.map((json) => Medicine.fromMap(json)).toList();
+    final result = await db.query(tableMedicines, orderBy: orderBy);
+    return result.map((json) => Medicine.fromMap(json)).toList();
   }
 
   Future<Alarm> createAlarm(Alarm alarm) async{
     final db = await instance.database;
-    final id = await db?.insert(tableAlarms, alarm.toMap());
+    final id = await db.insert(tableAlarms, alarm.toMap());
     print('alarm inserted with id: ${id}');
     // Check DB
    // final orderBy = '${AlarmFields.medicine_id} ASC';
