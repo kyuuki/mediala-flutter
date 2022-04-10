@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mediala/db/mediala_database.dart';
 
+import '../db/mediala_database.dart';
 import '../model/medicine.dart';
 import 'medicine_detail_page.dart';
 import 'medicine_new_page.dart';
@@ -24,11 +24,14 @@ class _MedicineListPageState extends State<MedicineListPage> {
             onPressed: () async {
               //Medicine medicne = await Navigator.push(context, MaterialPageRoute(builder: (context) => MedicineNewPage()));
               await Navigator.push(context, MaterialPageRoute(builder: (context) => MedicineNewPage()));
-              // この値を MedicineList に渡したい。
-              // DB に入れちゃうのが楽なのか？
-             /** setState(() {
-                medicines.add(medicne);
-              });**/
+
+              // new_page で登録したデータをここで取り出し
+              medicines = (await MediaAlaDatabase.instance.getAllMedicines())!;
+
+              setState(() {
+                // グローバル変数に入れる処理はここじゃなくても大丈夫？
+                // setState の中でやる処理は？
+              });
             },
           ),
         ),
@@ -42,25 +45,26 @@ class _MedicineListPageState extends State<MedicineListPage> {
 }
 
 // TODO: グローバルにはしたくない
+// Widget 間のやりとりをあとで勉強
+// BLoCパターン
+// リアクティブプログラミング
+// グローバル変数 (今はこれ)
+// Stream
+// RxDart
+// Provider
+
 // お薬リスト
-/**List<Medicine> medicines = [
-  //Medicine("ビタミン剤", ""),
- // Medicine("目薬", ""),
-  //Medicine("喉のくすり", ""),
-]; */
+List<Medicine> medicines = [];
+
 class MedicineList extends StatefulWidget {
   //const MedicineList({Key? key}) : super(key: key);
 
   @override
   _MedicineListState createState() => _MedicineListState();
-  /**void add(Medicine medicine) {
-    medicines.add(medicine);
-  }**/
 }
 
 class _MedicineListState extends State<MedicineList> {
 
-  late List<Medicine> medicines;
   bool isLoading = false;
 
   @override
@@ -77,7 +81,7 @@ class _MedicineListState extends State<MedicineList> {
 
   Future refreshMedicines() async {
     setState(() => isLoading = true);
-    this.medicines = (await MediaAlaDatabase.instance.getAllMedicines())!;
+    medicines = (await MediaAlaDatabase.instance.getAllMedicines())!;
     setState(() => isLoading = false);
   }
 
