@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 import 'package:sprintf/sprintf.dart';
 
 import '../db/mediala_database.dart';
@@ -211,7 +210,10 @@ Future openDialog(BuildContext context) {
                 int hour = int.parse(_hourController.text);
                 int minute = int.parse(_minuteController.text);
                 //var alarm = Alarm(hour, minute, days.map((d) => d.checked).toList());
-                var alarm = await MediaAlaDatabase.instance.createAlarm(Alarm(hour, minute ,[ true, true, true, true, true, true, true ], 5, 3));
+                // TODO: Medicine ID を渡す
+                var alarm = await MediaAlaDatabase.instance.createAlarm(Alarm(hour, minute, days.map((d) => d.checked).toList(), 5));
+                // for Debug
+                await MediaAlaDatabase.instance.getAllAlarms();
                 Navigator.pop(context, alarm);
               },
             ),

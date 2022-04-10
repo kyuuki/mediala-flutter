@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:sprintf/sprintf.dart';
 
 final String tableAlarms = 'alarms';
 
@@ -34,114 +33,66 @@ class AlarmFields {
 class Alarm {
   static const List<String> dayTexts = [ "日", "月", "火", "水", "木", "金", "土" ];  // TODO: 曜日クラス作成
 
+  int? id;  // 保存前は null
+  int medicineId;
   int hour = 0;
   int minute = 0;
-  String? timeOfMedicine;
-  int medicine_id;
-  int? id;
-  bool? day_1;
-  bool? day_2;
-  bool? day_3;
-  bool? day_4;
-  bool? day_5;
-  bool? day_6;
-  bool? day_7;
   List<bool> days = [ false, false, false, false, false, false, false ];
 
-  Alarm(this.hour, this.minute, this.days, this.medicine_id, [this.id]) {
+  // DB にアクセスする直前と直後に作ればいいので保持しておく必要はない
+  // String? timeOfMedicine;
+  // bool? day_1;
+  // bool? day_2;
+  // bool? day_3;
+  // bool? day_4;
+  // bool? day_5;
+  // bool? day_6;
+  // bool? day_7;
+
+  Alarm(this.hour, this.minute, this.days, this.medicineId, [this.id]) {
     if (days.length != 7) {
       throw Error();
     }
-    // Assigning values in single variable for easily storing in DB
-    day_1 = days[0];
-    day_2 = days[1];
-    day_3 = days[2];
-    day_4 = days[3];
-    day_5 = days[4];
-    day_6 = days[5];
-    day_7 = days[6];
-
-    // Changing into time
-    timeOfMedicine = hour.toString()+':' +minute.toString();
-  }
-
-  Alarm.fromDB(
-      this.id,
-      @required this.medicine_id,
-      @required this.timeOfMedicine,
-      @required this.day_1,
-      @required this.day_2,
-      @required this.day_3,
-      @required this.day_4,
-      @required this.day_5,
-      @required this.day_6,
-      @required this.day_7) {
-     days[0] = day_1!;
-     days[1] = day_2!;
-     days[2] = day_3!;
-     days[3] = day_4!;
-     days[4] = day_5!;
-     days[5] = day_6!;
-     days[6] = day_7!;
-     //hour = ;
-     //minute = timeOfMedicine!. minute;
   }
 
   Map<String, Object?> toMap() => {
     AlarmFields.id: id,
-    AlarmFields.medicine_id: medicine_id,
-    AlarmFields.time: timeOfMedicine,
-    AlarmFields.day_1: day_1! ? 1 : 0,
-    AlarmFields.day_2: day_2! ? 1 : 0,
-    AlarmFields.day_3: day_3! ? 1 : 0,
-    AlarmFields.day_4: day_4! ? 1 : 0,
-    AlarmFields.day_5: day_5! ? 1 : 0,
-    AlarmFields.day_6: day_6! ? 1 : 0,
-    AlarmFields.day_7: day_7! ? 1 : 0,
+    AlarmFields.medicine_id: medicineId,
+    AlarmFields.time: sprintf("%02d:%02d", [ hour, minute ]),
+    AlarmFields.day_1: days[0] ? 1 : 0,
+    AlarmFields.day_2: days[1] ? 1 : 0,
+    AlarmFields.day_3: days[2] ? 1 : 0,
+    AlarmFields.day_4: days[3] ? 1 : 0,
+    AlarmFields.day_5: days[4] ? 1 : 0,
+    AlarmFields.day_6: days[5] ? 1 : 0,
+    AlarmFields.day_7: days[6] ? 1 : 0,
   };
 
-  static Alarm fromMap(Map<String, Object?> json) {
-    print(json[AlarmFields.time]);
-    print(json[AlarmFields.day_1]);
-    print(json[AlarmFields.day_2]);
-    print(json[AlarmFields.day_3]);
+  static Alarm fromMap(Map<String, Object?> map) {
+    print(map[AlarmFields.time]);
+    print(map[AlarmFields.day_1]);
+    print(map[AlarmFields.day_2]);
+    print(map[AlarmFields.day_3]);
 
-    return Alarm.fromDB(
-      json[AlarmFields.id] as int?,
-      json[AlarmFields.medicine_id] as int,
-      json[AlarmFields.time] as String,
-      json[AlarmFields.day_1] == 1,
-      json[AlarmFields.day_2] == 1,
-      json[AlarmFields.day_3] == 1,
-      json[AlarmFields.day_4] == 1,
-      json[AlarmFields.day_5] == 1,
-      json[AlarmFields.day_6] == 1,
-      json[AlarmFields.day_7] == 1,
+    // TODO: map[AlarmFields.time] を hour と minute に分割
+    int hour = 10;
+    int minute = 0;
+
+    return Alarm(
+      hour,
+      minute,
+      [
+        map[AlarmFields.day_1] == 1,
+        map[AlarmFields.day_2] == 1,
+        map[AlarmFields.day_3] == 1,
+        map[AlarmFields.day_4] == 1,
+        map[AlarmFields.day_5] == 1,
+        map[AlarmFields.day_6] == 1,
+        map[AlarmFields.day_7] == 1,
+      ],
+      map[AlarmFields.medicine_id] as int,
+      map[AlarmFields.id] as int?,
     );
   }
-
-  Alarm idCopy ({
-    int? id,
-    int? medicine_id,
-    String? time,
-    bool? day_1,
-    bool? day_2,
-    bool? day_3,
-    bool? day_4,
-    bool? day_5,
-    bool? day_6,
-    bool? day_7,
-  }) => Alarm.fromDB(
-    id ?? this.id,
-    medicine_id ?? this.medicine_id,
-    time ?? timeOfMedicine,
-    day_1 ?? this.day_1,
-    day_2 ?? this.day_2,
-    day_3 ?? this.day_3,
-    day_4 ?? this.day_4,
-    day_5 ?? this.day_5,
-    day_6 ?? this.day_6,
-    day_7 ?? this.day_7,
-  );
 
 }

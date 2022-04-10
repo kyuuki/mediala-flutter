@@ -88,6 +88,20 @@ class MediaAlaDatabase {
    // final orderBy = '${AlarmFields.medicine_id} ASC';
    //  final result = await db?.query(tableAlarms, orderBy: orderBy);
    //  result?.map((json) => Alarm.fromMap(json)).toList();
-    return alarm.idCopy(id: id);
+    alarm.id = id;
+    return alarm;
+  }
+
+  Future<List<Alarm>> getAllAlarms() async {
+    final db = await instance.database;
+    final orderBy = '${AlarmFields.id} ASC';
+    final result = await db.query(tableAlarms, orderBy: orderBy);
+
+    // for Debug
+    for (var map in result) {
+      print(map.toString());
+    }
+
+    return result.map((map) => Alarm.fromMap(map)).toList();
   }
 }
