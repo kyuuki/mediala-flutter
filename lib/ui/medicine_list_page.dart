@@ -98,7 +98,15 @@ class _MedicineListState extends State<MedicineList> {
           onTap: () => {
             Navigator.push(context, MaterialPageRoute(builder: (context) => MedicineDetailPage(medicines[i])))
           },
-          trailing: const Icon(Icons.delete_forever),
+          trailing: IconButton(
+            icon: const Icon(
+              Icons.delete_rounded,
+            ),
+            onPressed: () async {
+              MediaAlaDatabase.instance.deleteMedicine(medicines[i].id!);
+              refreshMedicines();
+            } ,
+          ),
         );
       },
       separatorBuilder: (context, i) {

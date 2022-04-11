@@ -104,4 +104,20 @@ class MediaAlaDatabase {
 
     return result.map((map) => Alarm.fromMap(map)).toList();
   }
+
+  // delete medicine from table
+  Future<int> deleteMedicine(int id) async {
+    final db = await instance.database;
+    db.delete(
+      tableAlarms,
+      where: '${AlarmFields.medicine_id} = ?',
+      whereArgs: [id],
+    );
+    return
+      db.delete(
+      tableMedicines,
+      where: '${MedicineFields.id} = ?',
+      whereArgs: [id],
+    );
+  }
 }
