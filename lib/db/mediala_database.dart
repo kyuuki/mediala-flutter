@@ -141,7 +141,7 @@ class MediaAlaDatabase {
 
   Future<String> getMedicineName(int id) async {
     final db = await instance.database;
-    List<Map> resultSet = await db.rawQuery('Select name from $tableMedicines where _id=?', [id]);
+    List<Map> resultSet = await db.rawQuery('Select name from $tableMedicines where ${MedicineFields.id}=?', [id]);
     var FirstRecord = resultSet.first;
     var medicineName = FirstRecord['name'] as String;
     return medicineName;

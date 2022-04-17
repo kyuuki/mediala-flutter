@@ -105,19 +105,22 @@ class NotificationService {
         importance: Importance.max,
         priority: Priority.high,
         ticker: 'ticker',
-        additionalFlags: Int32List.fromList(<int>[insistentFlag]));
+        additionalFlags: Int32List.fromList(<int>[insistentFlag]),
+        largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'));
     final NotificationDetails platformChannelSpecifics =
     NotificationDetails(android: androidPlatformChannelSpecifics);
     debugPrint(platformChannelSpecifics.toString());
     final int alarmId = alarm.id ?? 0;
+    String medicineName = await getMedicineName(alarm.medicineId);
+    String zoneNotificationBody = medicineName + notificationBody;
     bool daily = checkDaily(alarm);
     if (daily) {
       print("For daily");
       var zoneAlarmId = alarmId*100;
       await flutterLocalNotificationsPlugin.zonedSchedule(
           zoneAlarmId,
-          'scheduled title',
-          'scheduled body',
+          notificationTitle,
+          zoneNotificationBody,
           _dailyTime(alarm),
           platformChannelSpecifics,
           androidAllowWhileIdle: true,
@@ -157,14 +160,15 @@ class NotificationService {
     debugPrint(tz.TZDateTime.now(tz.local).toString());
     const int insistentFlag = 4;
     String medicineName = await getMedicineName(alarm.medicineId);
-    medicineName = medicineName + ' '+ notificationBody;
+    medicineName = medicineName + notificationBody;
     final AndroidNotificationDetails androidPlatformChannelSpecifics =
     AndroidNotificationDetails(channelId, channelName,
         channelDescription: channelDescription,
         importance: Importance.max,
         priority: Priority.high,
         ticker: 'ticker',
-        additionalFlags: Int32List.fromList(<int>[insistentFlag]));
+        additionalFlags: Int32List.fromList(<int>[insistentFlag]),
+        largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'));
     final NotificationDetails platformChannelSpecifics =
     NotificationDetails(android: androidPlatformChannelSpecifics);
 
