@@ -180,7 +180,7 @@ class _AlertListState extends State<AlertList> {
 // https://www.youtube.com/watch?v=D6icsXS8NeA
 Future openDialog(BuildContext context) {
   var _hourController = TextEditingController();
-  var _minuteController = TextEditingController();
+  var _minuteController = TextEditingController(text: "00");
   List<DaysModel> days = [
     DaysModel("日"),
     DaysModel("月"),
@@ -273,7 +273,7 @@ class InputAlarm {
 // 曜日のチェックボックスのモデル
 class DaysModel {
   final String name;
-  bool checked = false;
+  bool checked = true;
 
   DaysModel(this.name);
 }
