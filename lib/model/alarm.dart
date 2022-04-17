@@ -93,6 +93,6 @@ class Alarm {
       map[AlarmFields.medicine_id] as int,
       map[AlarmFields.id] as int?,
     );
-  }
 
+  }
 }
