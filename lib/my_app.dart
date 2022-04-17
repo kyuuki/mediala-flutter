@@ -12,8 +12,8 @@ class MyApp extends StatelessWidget {
       title: _title,  // What is this (https://stackoverflow.com/questions/50615006/flutter-where-is-the-title-of-material-app-used)
 
       theme: ThemeData(
-        primarySwatch: myMaterialColor,
-        //primarySwatch: Colors.blue,
+        //primarySwatch: myMaterialColor,
+        primarySwatch: Colors.indigo,
 
         // https://qiita.com/ko2ic/items/88bc9eee52e16560529e#inputdecorationtheme-focusedborder
         // 入力フォームが入力中の文字が見にくいので変更
