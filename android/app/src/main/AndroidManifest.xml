@@ -1,9 +1,33 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="jp.fujilabo.mediala">
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
    <application
         android:label="お薬アラーム"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+       <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
+           <intent-filter>
+               <action android:name="android.intent.action.BOOT_COMPLETED"/>
+               <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+           </intent-filter>
+       </receiver>
+       <service
+           android:name="dev.fluttercommunity.plus.androidalarmmanager.AlarmService"
+           android:permission="android.permission.BIND_JOB_SERVICE"
+           android:exported="false"/>
+       <receiver
+           android:name="dev.fluttercommunity.plus.androidalarmmanager.AlarmBroadcastReceiver"
+           android:exported="false"/>
+       <receiver
+           android:name="dev.fluttercommunity.plus.androidalarmmanager.RebootBroadcastReceiver"
+           android:enabled="false">
+           <intent-filter>
+               <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+           </intent-filter>
+       </receiver>
         <activity
             android:name=".MainActivity"
             android:exported="true"
