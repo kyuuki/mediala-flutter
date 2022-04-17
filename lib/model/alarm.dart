@@ -35,6 +35,7 @@ class Alarm {
 
   int? id;  // 保存前は null
   int medicineId;
+  // 本当は time 型みたいなので持つのがよさそう
   int hour = 0;
   int minute = 0;
   List<bool> days = [ false, false, false, false, false, false, false ];
@@ -69,14 +70,14 @@ class Alarm {
   };
 
   static Alarm fromMap(Map<String, Object?> map) {
+    // SQLite に time 型ある？
+    // map[AlarmFields.time] を hour と minute に分割
     print(map[AlarmFields.time]);
-    print(map[AlarmFields.day_1]);
-    print(map[AlarmFields.day_2]);
-    print(map[AlarmFields.day_3]);
-
-    // TODO: map[AlarmFields.time] を hour と minute に分割
-    int hour = 10;
-    int minute = 0;
+    String time = map[AlarmFields.time] as String;
+    var splitted = time.split(":");
+    int hour = int.parse(splitted[0]);
+    int minute = int.parse(splitted[1]);
+    // TODO: 変なデータが入っていたときのエラー処理
 
     return Alarm(
       hour,

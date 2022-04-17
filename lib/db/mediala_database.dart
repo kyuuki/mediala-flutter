@@ -105,6 +105,15 @@ class MediaAlaDatabase {
     return result.map((map) => Alarm.fromMap(map)).toList();
   }
 
+  Future<List<Alarm>> getAlarms(int medicineId) async {
+    final db = await instance.database;
+    final where = '${AlarmFields.medicine_id} = ${medicineId}';
+    final orderBy = '${AlarmFields.id} ASC';
+    final result = await db.query(tableAlarms, where: where, orderBy: orderBy);
+
+    return result.map((map) => Alarm.fromMap(map)).toList();
+  }
+
   // delete medicine from table
   Future<int> deleteMedicine(int id) async {
     final db = await instance.database;
