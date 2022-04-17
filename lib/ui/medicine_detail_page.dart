@@ -37,10 +37,10 @@ class MedicineDetailPage extends StatelessWidget {
               ],
             ),
           ),
-          const Expanded(
+          Expanded(
             child: Padding(
-              padding: EdgeInsets.only(left: 60.0),
-              child: AlertList(),
+              padding: const EdgeInsets.only(left: 60.0),
+              child: AlertList(mediCineId: medicine.id!), // 前画面から渡される Medicine なので ID は絶対に入っている
             ),
           ),
         ],
@@ -50,8 +50,17 @@ class MedicineDetailPage extends StatelessWidget {
 
 }
 
+//
+// アラームリスト (Stateful)
+//
 class AlertList extends StatefulWidget {
-  const AlertList({Key? key}) : super(key: key);
+  // Constant constructors
+  // https://dart.dev/guides/language/language-tour#constant-constructors
+  // https://docs.flutter.dev/development/ui/interactive#the-parent-widget-manages-the-widgets-state
+  const AlertList({Key? key, required this.mediCineId}) : super(key: key);
+
+  // 薬 ID
+  final int mediCineId;
 
   @override
   _AlertListState createState() => _AlertListState();
@@ -59,10 +68,23 @@ class AlertList extends StatefulWidget {
 
 class _AlertListState extends State<AlertList> {
   List<Alarm> alarms = [
-    Alarm(15,30,[ true, true, true, true, true, true, true ], 1, 2),
+    //Alarm(15,30,[ true, true, true, true, true, true, true ], 1, 2),
     //Alarm(13, 0, [ true, false, false, false, true, false, false ]),
     //Alarm(17, 30, [ true, false, true, true, false, false, true ]),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    refreshAlarms();  // Future のためだけに別メソッド？
+  }
+
+  Future refreshAlarms() async {
+    alarms = await MediaAlaDatabase.instance.getAlarms(widget.mediCineId);
+    setState(() {
+      // 何書くの？
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +97,13 @@ class _AlertListState extends State<AlertList> {
           return ListTile(
             leading: const Icon(Icons.add_circle),
             onTap: () async {
-              Alarm alarm = await openDialog(context);
+              InputAlarm inputAlarm = await openDialog(context);
+              var alarm = await MediaAlaDatabase.instance.createAlarm(
+                  Alarm(inputAlarm.hour, inputAlarm.minute, inputAlarm.days, widget.mediCineId));
+
+              // アラーム設定
+              await NotificationService.scheduleAlarm(true, alarm);
+
               setState(() {
                 alarms.add(alarm);
               });
@@ -150,8 +178,7 @@ Future openDialog(BuildContext context) {
     DaysModel("土"),
   ];
 
-  // ここに戻り値を書くのか！！！
-  return showDialog<Alarm>(
+  return showDialog<InputAlarm>(  // ← ここ <> にダイアログからの戻り値の型を書く
     context: context,
     builder: (context) => StatefulBuilder(
       builder: (context, setState) => AlertDialog(
@@ -210,19 +237,24 @@ Future openDialog(BuildContext context) {
               onPressed: () async{
                 int hour = int.parse(_hourController.text);
                 int minute = int.parse(_minuteController.text);
-                //var alarm = Alarm(hour, minute, days.map((d) => d.checked).toList());
-                // TODO: Medicine ID を渡す
-                var alarm = await MediaAlaDatabase.instance.createAlarm(Alarm(hour, minute, days.map((d) => d.checked).toList(), 5));
-                print("Alarm id is ${alarm.id}");
-                await NotificationService.scheduleAlarm(true, alarm);
-                // for Debug
-                await MediaAlaDatabase.instance.getAllAlarms();
-                Navigator.pop(context, alarm);
+
+                // DB 保存箇所をダイアログから戻った場所に移動
+                //var alarm = await MediaAlaDatabase.instance.createAlarm(Alarm(hour, minute, days.map((d) => d.checked).toList(), 5));
+                Navigator.pop(context, InputAlarm(hour, minute, days.map((d) => d.checked).toList()));
               },
             ),
           ]),
     ),
   );
+}
+
+// アラーム入力ダイアログの入力データ
+class InputAlarm {
+  final int hour;
+  final int minute;
+  final List<bool> days;
+
+  const InputAlarm(this.hour, this.minute, this.days);
 }
 
 // 曜日のチェックボックスのモデル
