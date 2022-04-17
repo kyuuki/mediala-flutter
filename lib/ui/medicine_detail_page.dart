@@ -102,7 +102,7 @@ class _AlertListState extends State<AlertList> {
                   Alarm(inputAlarm.hour, inputAlarm.minute, inputAlarm.days, widget.mediCineId));
 
               // アラーム設定
-              await NotificationService.scheduleAlarm(true, alarm);
+              await NotificationService.scheduleAlarm(alarm);
 
               setState(() {
                 alarms.add(alarm);

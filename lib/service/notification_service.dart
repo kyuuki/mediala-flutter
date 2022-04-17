@@ -106,7 +106,7 @@ class NotificationService {
   }
 
   // scheduling alarm
-  static Future<void> scheduleAlarm(bool daily, Alarm alarm) async {
+  static Future<void> scheduleAlarm(Alarm alarm) async {
     tz.initializeTimeZones();
     //UILocalNotificationDateInterpretation timeInter =  as UILocalNotificationDateInterpretation;
     final String? timeZoneName = await FlutterNativeTimezone.getLocalTimezone();
@@ -125,17 +125,32 @@ class NotificationService {
     NotificationDetails(android: androidPlatformChannelSpecifics);
     debugPrint(platformChannelSpecifics.toString());
     int alarmId = alarm.id ?? 0;
-   await flutterLocalNotificationsPlugin.zonedSchedule(
-         alarmId,
-        'scheduled title',
-        'scheduled body',
-        _dailyTime(alarm),
-        //tz.TZDateTime.now(tz.local).add(const Duration(seconds: 1)),
-        platformChannelSpecifics,
-        androidAllowWhileIdle: true,
-        uiLocalNotificationDateInterpretation:
-        UILocalNotificationDateInterpretation.absoluteTime);
-  }
+    bool daily = checkDaily(alarm);
+    if (daily) {
+      print("For daily");
+      alarmId = alarmId*100;
+      await flutterLocalNotificationsPlugin.zonedSchedule(
+          alarmId,
+          'scheduled title',
+          'scheduled body',
+          _dailyTime(alarm),
+          platformChannelSpecifics,
+          androidAllowWhileIdle: true,
+          uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime);
+    }
+
+    else {
+      print("For specific day");
+      for (int i=0; i<alarm.days.length; i++) {
+        if (alarm.days[i]) {
+          alarmId = (alarmId*100)+1;
+          await _scheduleWeekly(alarm,i,alarmId);
+        }
+      }
+    }
+    }
+
 
   static tz.TZDateTime _dailyTime(Alarm alarm) {
     final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
@@ -146,6 +161,85 @@ class NotificationService {
     }
     print(scheduledDate);
     return scheduledDate;
+  }
+
+  // Scheduling weekly alarm
+  static Future<void> _scheduleWeekly(Alarm alarm, int day, int alarmID) async {
+
+    final String? timeZoneName = await FlutterNativeTimezone.getLocalTimezone();
+    tz.setLocalLocation(tz.getLocation(timeZoneName!));
+    debugPrint('In here');
+    debugPrint(tz.TZDateTime.now(tz.local).toString());
+    const int insistentFlag = 4;
+    final AndroidNotificationDetails androidPlatformChannelSpecifics =
+    AndroidNotificationDetails('your channel id', 'your channel name',
+        channelDescription: 'your channel description',
+        importance: Importance.max,
+        priority: Priority.high,
+        ticker: 'ticker',
+        additionalFlags: Int32List.fromList(<int>[insistentFlag]));
+    final NotificationDetails platformChannelSpecifics =
+    NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+        alarmID,
+        'weekly scheduled notification title',
+        'weekly scheduled notification body',
+        _nextInstanceOfWeek(alarm, day),
+        platformChannelSpecifics,
+        androidAllowWhileIdle: true,
+        uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime);
+  }
+
+  static tz.TZDateTime _nextInstanceOfWeek(Alarm alarm, int alarmDay) {
+    tz.TZDateTime scheduledDate = _dailyTime(alarm);
+    if (alarmDay == 0) {
+      while (scheduledDate.weekday != DateTime.sunday) {
+        scheduledDate = scheduledDate.add(const Duration(days: 1));
+      }
+    }
+    else if (alarmDay == 1) {
+      while (scheduledDate.weekday != DateTime.monday) {
+        scheduledDate = scheduledDate.add(const Duration(days: 1));
+      }
+    }
+    else if (alarmDay == 2) {
+      while (scheduledDate.weekday != DateTime.tuesday) {
+        scheduledDate = scheduledDate.add(const Duration(days: 2));
+      }
+    }
+    else if (alarmDay == 3) {
+      while (scheduledDate.weekday != DateTime.wednesday) {
+        scheduledDate = scheduledDate.add(const Duration(days: 1));
+      }
+    }
+    else if (alarmDay == 4) {
+      while (scheduledDate.weekday != DateTime.thursday) {
+        scheduledDate = scheduledDate.add(const Duration(days: 1));
+      }
+    }
+    else if (alarmDay == 5) {
+      while (scheduledDate.weekday != DateTime.friday) {
+        scheduledDate = scheduledDate.add(const Duration(days: 1));
+      }
+    }
+    else {
+      while (scheduledDate.weekday != DateTime.saturday) {
+        scheduledDate = scheduledDate.add(const Duration(days: 1));
+      }
+    }
+    return scheduledDate;
+  }
+
+  static bool checkDaily(Alarm alarm) {
+    bool isDaily = true;
+    var falseCount = alarm.days.where((item) => item == false).length;
+    if (falseCount!=0) {
+      isDaily = false;
+    }
+    return isDaily;
   }
 
 }
