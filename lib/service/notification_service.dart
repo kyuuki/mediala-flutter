@@ -6,6 +6,7 @@ import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:mediala/db/mediala_database.dart';
 import 'package:mediala/model/alarm.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -16,6 +17,11 @@ class NotificationService {
 
   static final NotificationService _notificationService = NotificationService._internal();
   static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  static final String notificationTitle = 'お薬アラーム';
+  static final String notificationBody = 'の時間になりました。';
+  static final String channelId = '0';
+  static final String channelName = 'メッセージ通知';
+  static final String channelDescription = 'お薬の時間を通知します。';
   static const AndroidNotificationDetails androidNotificationsDetails = AndroidNotificationDetails(
     'channel-id',
     'channel-name',
@@ -83,27 +89,6 @@ class NotificationService {
       sound: true,
     );
   }
-  Future<void> showNotificationCustomSound() async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails(
-      'your other channel id',
-      'your other channel name',
-      channelDescription: 'your other channel description',
-      sound: RawResourceAndroidNotificationSound('notification'),
-    );
-    const IOSNotificationDetails iOSPlatformChannelSpecifics =
-    IOSNotificationDetails(sound: 'slow_spring_board.aiff');
-    final NotificationDetails platformChannelSpecifics = NotificationDetails(
-      android: androidPlatformChannelSpecifics,
-      iOS: iOSPlatformChannelSpecifics,
-    );
-    await flutterLocalNotificationsPlugin.show(
-      0,
-      'custom sound notification title',
-      'custom sound notification body',
-      platformChannelSpecifics,
-    );
-  }
 
   // scheduling alarm
   static Future<void> scheduleAlarm(Alarm alarm) async {
@@ -115,8 +100,8 @@ class NotificationService {
     debugPrint(tz.TZDateTime.now(tz.local).toString());
     const int insistentFlag = 4;
     final AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails('your channel id', 'your channel name',
-        channelDescription: 'your channel description',
+    AndroidNotificationDetails(channelId, channelName,
+        channelDescription: channelDescription,
         importance: Importance.max,
         priority: Priority.high,
         ticker: 'ticker',
@@ -129,10 +114,12 @@ class NotificationService {
     if (daily) {
       print("For daily");
       alarmId = alarmId*100;
+      String medicineName = await getMedicineName(alarm.medicineId);
+      medicineName = medicineName + ' '+ notificationBody;
       await flutterLocalNotificationsPlugin.zonedSchedule(
           alarmId,
-          'scheduled title',
-          'scheduled body',
+          notificationTitle,
+          medicineName,
           _dailyTime(alarm),
           platformChannelSpecifics,
           androidAllowWhileIdle: true,
@@ -150,7 +137,6 @@ class NotificationService {
       }
     }
     }
-
 
   static tz.TZDateTime _dailyTime(Alarm alarm) {
     final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
@@ -171,9 +157,11 @@ class NotificationService {
     debugPrint('In here');
     debugPrint(tz.TZDateTime.now(tz.local).toString());
     const int insistentFlag = 4;
+    String medicineName = await getMedicineName(alarm.medicineId);
+    medicineName = medicineName + ' '+ notificationBody;
     final AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails('your channel id', 'your channel name',
-        channelDescription: 'your channel description',
+    AndroidNotificationDetails(channelId, channelName,
+        channelDescription: channelDescription,
         importance: Importance.max,
         priority: Priority.high,
         ticker: 'ticker',
@@ -183,8 +171,8 @@ class NotificationService {
 
     await flutterLocalNotificationsPlugin.zonedSchedule(
         alarmID,
-        'weekly scheduled notification title',
-        'weekly scheduled notification body',
+        notificationTitle,
+        medicineName,
         _nextInstanceOfWeek(alarm, day),
         platformChannelSpecifics,
         androidAllowWhileIdle: true,
@@ -256,6 +244,10 @@ class NotificationService {
         }
       }
     }
+  }
+
+  static Future<String> getMedicineName(int medicineId) async {
+    return MediaAlaDatabase.instance.getMedicineName(medicineId);
   }
 
 }
