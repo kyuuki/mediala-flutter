@@ -117,7 +117,20 @@ class _AlertListState extends State<AlertList> {
             sprintf("%02d:%02d", [ alarms[i].hour, alarms[i].minute ]),
           ),
           subtitle: buildRowDays(alarms[i].days),
-          trailing: const Icon(Icons.remove_circle),
+          trailing: IconButton(
+            icon: const Icon(
+              Icons.remove_circle,
+            ),
+            onPressed: () async {
+              //
+              // アラーム削除処理
+              //
+              MediaAlaDatabase.instance.deleteAlarm(alarms[i].id!);
+              setState(() {
+                alarms.removeAt(i);
+              });
+            } ,
+          ),
         );
       },
       separatorBuilder: (context, i) {

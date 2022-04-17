@@ -129,4 +129,13 @@ class MediaAlaDatabase {
       whereArgs: [id],
     );
   }
+
+  Future<int> deleteAlarm(int id) async {
+    final db = await instance.database;
+    return db.delete(
+      tableAlarms,
+      where: '${AlarmFields.id} = ?',
+      whereArgs: [id],
+    );
+  }
 }
