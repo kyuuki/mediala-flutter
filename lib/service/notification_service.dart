@@ -124,13 +124,13 @@ class NotificationService {
     final NotificationDetails platformChannelSpecifics =
     NotificationDetails(android: androidPlatformChannelSpecifics);
     debugPrint(platformChannelSpecifics.toString());
-    int alarmId = alarm.id ?? 0;
+    final int alarmId = alarm.id ?? 0;
     bool daily = checkDaily(alarm);
     if (daily) {
       print("For daily");
-      alarmId = alarmId*100;
+      var zoneAlarmId = alarmId*100;
       await flutterLocalNotificationsPlugin.zonedSchedule(
-          alarmId,
+          zoneAlarmId,
           'scheduled title',
           'scheduled body',
           _dailyTime(alarm),
@@ -141,11 +141,12 @@ class NotificationService {
     }
 
     else {
+      var zoneAlarmId;
       print("For specific day");
       for (int i=0; i<alarm.days.length; i++) {
         if (alarm.days[i]) {
-          alarmId = (alarmId*100)+(i+1);
-          await _scheduleWeekly(alarm,i,alarmId);
+          zoneAlarmId = (alarmId*100)+(i+1);
+          await _scheduleWeekly(alarm,i,zoneAlarmId);
         }
       }
     }
