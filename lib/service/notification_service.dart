@@ -144,7 +144,7 @@ class NotificationService {
       print("For specific day");
       for (int i=0; i<alarm.days.length; i++) {
         if (alarm.days[i]) {
-          alarmId = (alarmId*100)+1;
+          alarmId = (alarmId*100)+(i+1);
           await _scheduleWeekly(alarm,i,alarmId);
         }
       }
@@ -207,7 +207,7 @@ class NotificationService {
     }
     else if (alarmDay == 2) {
       while (scheduledDate.weekday != DateTime.tuesday) {
-        scheduledDate = scheduledDate.add(const Duration(days: 2));
+        scheduledDate = scheduledDate.add(const Duration(days: 1));
       }
     }
     else if (alarmDay == 3) {
@@ -252,7 +252,7 @@ class NotificationService {
       for (int i =0; i<alarm.days.length; i++) {
         if (alarm.days[i]) {
           print ("in cancel");
-          await flutterLocalNotificationsPlugin.cancel((alarmId*100)+1);
+          await flutterLocalNotificationsPlugin.cancel((alarmId*100)+(i+1));
         }
       }
     }
