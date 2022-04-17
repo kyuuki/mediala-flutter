@@ -242,4 +242,20 @@ class NotificationService {
     return isDaily;
   }
 
+  static Future<void> cancelNotification(Alarm alarm) async {
+    int alarmId = alarm.id ?? 0;
+    if (checkDaily(alarm)) {
+      print ("in cancel");
+      await flutterLocalNotificationsPlugin.cancel(alarmId*100);
+    }
+    else {
+      for (int i =0; i<alarm.days.length; i++) {
+        if (alarm.days[i]) {
+          print ("in cancel");
+          await flutterLocalNotificationsPlugin.cancel((alarmId*100)+1);
+        }
+      }
+    }
+  }
+
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mediala/service/notification_service.dart';
 
 import '../db/mediala_database.dart';
 import '../model/medicine.dart';
@@ -103,6 +104,10 @@ class _MedicineListState extends State<MedicineList> {
               Icons.delete_rounded,
             ),
             onPressed: () async {
+              List alarms = await MediaAlaDatabase.instance.getAlarms(medicines[i].id!);
+              for (int i=0; i<alarms.length; i++) {
+               await NotificationService.cancelNotification(alarms[i]);
+              }
               MediaAlaDatabase.instance.deleteMedicine(medicines[i].id!);
               refreshMedicines();
             } ,

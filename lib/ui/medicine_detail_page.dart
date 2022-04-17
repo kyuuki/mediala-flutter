@@ -125,6 +125,7 @@ class _AlertListState extends State<AlertList> {
               //
               // アラーム削除処理
               //
+              await NotificationService.cancelNotification(alarms[i]);
               MediaAlaDatabase.instance.deleteAlarm(alarms[i].id!);
               setState(() {
                 alarms.removeAt(i);
