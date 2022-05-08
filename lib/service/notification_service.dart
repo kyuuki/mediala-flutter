@@ -71,8 +71,10 @@ class NotificationService {
             importance: Importance.max,
             priority: Priority.high,
             ticker: 'ticker',
-            additionalFlags: Int32List.fromList(<int>[insistentFlag]),
-            largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher')
+            //additionalFlags: Int32List.fromList(<int>[insistentFlag]),
+            largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
+            // https://qiita.com/kinyakon/items/8ff8828d9a1cbf7dbcc6
+            sound: const RawResourceAndroidNotificationSound("ring"),
         );
 
     return NotificationDetails(android: androidPlatformChannelSpecifics);
