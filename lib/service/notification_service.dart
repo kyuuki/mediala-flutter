@@ -17,28 +17,11 @@ class NotificationService {
 
   static final NotificationService _notificationService = NotificationService._internal();
   static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  static final String notificationTitle = 'お薬アラーム';
-  static final String notificationBody = 'の時間になりました。';
-  static final String channelId = '0';
-  static final String channelName = 'メッセージ通知';
-  static final String channelDescription = 'お薬の時間を通知します。';
-  static const AndroidNotificationDetails androidNotificationsDetails = AndroidNotificationDetails(
-    'channel-id',
-    'channel-name',
-    channelDescription: 'channel-description',
-    importance: Importance.max,
-    priority: Priority.max,
-    playSound: true,
-  );
-  static const IOSNotificationDetails iosChannel = IOSNotificationDetails(
-    presentAlert: true,
-    presentBadge: true,
-    presentSound: true,
-    //badgeNumber: 1,
-    //attachments: List<IOSNotificationAttachment>?
-    subtitle: 'subtitle',
-    //threadIdentifier: ?
-  );
+  static const String notificationTitle = 'お薬アラーム';
+  static const String notificationBody = 'の時間になりました。';
+  static const String channelId = '0';
+  static const String channelName = 'メッセージ通知';
+  static const String channelDescription = 'お薬の時間を通知します。';
 
   factory NotificationService() {
     return _notificationService;
@@ -75,10 +58,26 @@ class NotificationService {
   }
   Future selectNotification(String? payload) async{
   }
-  static const NotificationDetails platformChannelSpecifics = NotificationDetails(
-    android: androidNotificationsDetails,
-    iOS: iosChannel,
-  );
+
+  //
+  // NotificationDetails 生成
+  //
+  static NotificationDetails createNotificationDetails() {
+    const int insistentFlag = 4;
+
+    final AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(channelId, channelName,
+            channelDescription: channelDescription,
+            importance: Importance.max,
+            priority: Priority.high,
+            ticker: 'ticker',
+            additionalFlags: Int32List.fromList(<int>[insistentFlag]),
+            largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher')
+        );
+
+    return NotificationDetails(android: androidPlatformChannelSpecifics);
+  }
+
   Future<void> requestIOSPermissions() async {
     flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
@@ -98,18 +97,7 @@ class NotificationService {
     tz.setLocalLocation(tz.getLocation(timeZoneName!));
     debugPrint('In here');
     debugPrint(tz.TZDateTime.now(tz.local).toString());
-    const int insistentFlag = 4;
-    final AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails(channelId, channelName,
-        channelDescription: channelDescription,
-        importance: Importance.max,
-        priority: Priority.high,
-        ticker: 'ticker',
-        additionalFlags: Int32List.fromList(<int>[insistentFlag]),
-        largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'));
-    final NotificationDetails platformChannelSpecifics =
-    NotificationDetails(android: androidPlatformChannelSpecifics);
-    debugPrint(platformChannelSpecifics.toString());
+
     final int alarmId = alarm.id ?? 0;
     String medicineName = await getMedicineName(alarm.medicineId);
     String zoneNotificationBody = medicineName + notificationBody;
@@ -122,7 +110,7 @@ class NotificationService {
           notificationTitle,
           zoneNotificationBody,
           _dailyTime(alarm),
-          platformChannelSpecifics,
+          createNotificationDetails(),
           androidAllowWhileIdle: true,
           uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
@@ -159,26 +147,15 @@ class NotificationService {
     tz.setLocalLocation(tz.getLocation(timeZoneName!));
     debugPrint('In here');
     debugPrint(tz.TZDateTime.now(tz.local).toString());
-    const int insistentFlag = 4;
     String medicineName = await getMedicineName(alarm.medicineId);
     medicineName = medicineName + notificationBody;
-    final AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails(channelId, channelName,
-        channelDescription: channelDescription,
-        importance: Importance.max,
-        priority: Priority.high,
-        ticker: 'ticker',
-        additionalFlags: Int32List.fromList(<int>[insistentFlag]),
-        largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'));
-    final NotificationDetails platformChannelSpecifics =
-    NotificationDetails(android: androidPlatformChannelSpecifics);
 
     await flutterLocalNotificationsPlugin.zonedSchedule(
         alarmID,
         notificationTitle,
         medicineName,
         _nextInstanceOfWeek(alarm, day),
-        platformChannelSpecifics,
+        createNotificationDetails(),
         androidAllowWhileIdle: true,
         uiLocalNotificationDateInterpretation:
         UILocalNotificationDateInterpretation.absoluteTime,
